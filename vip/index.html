@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avalie nossa empresa - Taply VIP</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    body { background-color: #f4f6f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .card { background: #ffffff; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; max-width: 380px; width: 100%; }
+    h2 { color: #1a1a1a; margin-bottom: 8px; font-size: 1.3rem; }
+    p { color: #666; font-size: 0.9rem; margin-top: 0; }
+    .stars { font-size: 2.5rem; color: #ffc107; cursor: pointer; margin: 20px 0; user-select: none; }
+    .star-btn { transition: transform 0.1s ease; display: inline-block; }
+    .star-btn:active { transform: scale(1.2); }
+
+    /* Modal VIP */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 20px; z-index: 999; }
+    .modal-content { background: #ffffff; padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-content h3 { margin: 0 0 8px 0; color: #1a1a1a; font-size: 1.2rem; }
+    .modal-content p { color: #555; font-size: 0.85rem; margin-bottom: 15px; }
+    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; }
+    input:focus { border-color: #0066ff; }
+    .btn-submit { background: #0066ff; color: #fff; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 0.95rem; cursor: pointer; margin-top: 5px; }
+    .btn-skip { background: transparent; border: none; color: #888; font-size: 0.8rem; margin-top: 12px; cursor: pointer; text-decoration: underline; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Como foi sua experiência?</h2>
+    <p>Sua opinião é muito importante para nós!</p>
+    <div class="stars">
+      <span class="star-btn" onclick="avaliar(1)">★</span>
+      <span class="star-btn" onclick="avaliar(2)">★</span>
+      <span class="star-btn" onclick="avaliar(3)">★</span>
+      <span class="star-btn" onclick="avaliar(4)">★</span>
+      <span class="star-btn" onclick="avaliar(5)">★</span>
+    </div>
+  </div>
+
+  <!-- MODAL DE CAPTURA VIP (4 E 5 ESTRELAS) -->
+  <div id="modalVip" class="modal">
+    <div class="modal-content">
+      <h3>🌟 Clube VIP</h3>
+      <p>Cadastre-se para receber ofertas exclusivas e presentes de aniversário!</p>
+      
+      <input type="text" id="nomeVip" placeholder="Seu Primeiro Nome" required>
+      <input type="tel" id="whatsVip" placeholder="Seu WhatsApp (com DDD)" required>
+      
+      <button class="btn-submit" onclick="enviarVipEGo()">Garantir Benefício e Avaliar 🚀</button>
+      <button class="btn-skip" onclick="irParaGoogle()">Ir direto para o Google</button>
+    </div>
+  </div>
+
+  <script>
+    // Configurações do Cliente
+    const GOOGLE_MAPS_URL = "SEU_LINK_DO_GOOGLE_MAPS_AQUI";
+    const WEBHOOK_APPS_SCRIPT = "SEU_WEBHOOK_DO_GOOGLE_SHEETS_AQUI";
+
+    function avaliar(nota) {
+      if (nota >= 4) {
+        // Exibe o modal para captar o lead antes de ir ao Google
+        document.getElementById("modalVip").style.display = "flex";
+      } else {
+        // Redireciona para o formulário privado de críticas (1-3 estrelas)
+        window.location.href = "../critica.html"; 
+      }
+    }
+
+    function enviarVipEGo() {
+      const nome = document.getElementById("nomeVip").value.trim();
+      const whats = document.getElementById("whatsVip").value.trim();
+
+      if (!nome || !whats) {
+        alert("Por favor, preencha o seu nome e WhatsApp para continuar.");
+        return;
+      }
+
+      // Desabilita o botão para evitar cliques duplicados
+      const btn = document.querySelector(".btn-submit");
+      btn.innerText = "Enviando...";
+      btn.disabled = true;
+
+      // Envia os dados para a planilha Google
+      fetch(WEBHOOK_APPS_SCRIPT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: nome,
+          whatsapp: whats,
+          origem: "LEAD_VIP_4_5_STARS",
+          data: new Date().toLocaleString("pt-BR")
+        })
+      }).then(() => {
+        irParaGoogle();
+      }).catch(() => {
+        // Mesmo se houver falha de conexão, garante o redirecionamento ao Google
+        irParaGoogle();
+      });
+    }
+
+    function irParaGoogle() {
+      window.location.href = GOOGLE_MAPS_URL;
+    }
+  </script>
+
+</body>
+</html>
