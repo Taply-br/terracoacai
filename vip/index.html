@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avalie nossa empresa - Taply VIP</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    body { background-color: #f4f6f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .card { background: #ffffff; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; max-width: 380px; width: 100%; }
+    h2 { color: #1a1a1a; margin-bottom: 8px; font-size: 1.3rem; }
+    p { color: #666; font-size: 0.9rem; margin-top: 0; }
+    .stars { font-size: 2.5rem; color: #ffc107; cursor: pointer; margin: 20px 0; user-select: none; }
+    .star-btn { transition: transform 0.1s ease; display: inline-block; }
+    .star-btn:active { transform: scale(1.2); }
+
+    /* Estilos dos Modais */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 20px; z-index: 999; }
+    .modal-content { background: #ffffff; padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-content h3 { margin: 0 0 8px 0; color: #1a1a1a; font-size: 1.2rem; }
+    .modal-content p { color: #555; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.3; }
+    input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; }
+    textarea { resize: vertical; height: 80px; }
+    input:focus, textarea:focus { border-color: #0066ff; }
+    .btn-submit { background: #0066ff; color: #fff; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 0.95rem; cursor: pointer; margin-top: 5px; }
+    .btn-skip { background: transparent; border: none; color: #888; font-size: 0.8rem; margin-top: 12px; cursor: pointer; text-decoration: underline; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- CARD PRINCIPAL -->
+  <div class="card">
+    <h2>Como foi sua experiência?</h2>
+    <p>Sua opinião é muito importante para nós!</p>
+    <div class="stars">
+      <span class="star-btn" onclick="avaliar(1)">★</span>
+      <span class="star-btn" onclick="avaliar(2)">★</span>
+      <span class="star-btn" onclick="avaliar(3)">★</span>
+      <span class="star-btn" onclick="avaliar(4)">★</span>
+      <span class="star-btn" onclick="avaliar(5)">★</span>
+    </div>
+  </div>
+
+  <!-- MODAL VIP (4 E 5 ESTRELAS) -->
+  <div id="modalVip" class="modal">
+    <div class="modal-content">
+      <h3>🌟 Clube VIP</h3>
+      <p>Cadastre-se para receber benefícios exclusivos do nosso clube!</p>
+      
+      <input type="text" id="nomeVip" placeholder="Seu Primeiro Nome">
+      <input type="tel" id="whatsVip" placeholder="Seu WhatsApp (com DDD)">
+      
+      <button class="btn-submit" onclick="enviarVipEGo()">Garantir Benefício e Avaliar 🚀</button>
+      <button class="btn-skip" onclick="irParaGoogle()">Ir direto para o Google</button>
+    </div>
+  </div>
+
+  <!-- MODAL CRÍTICA PRIVADA (1, 2 E 3 ESTRELAS) -->
+  <div id="modalCritica" class="modal">
+    <div class="modal-content">
+      <h3>💬 Fale direto com a gerência!</h3>
+      <p>Sua mensagem vai direto para o WhatsApp da gerência. Deixe seu contato para podermos te pedir desculpas e reparar nosso erro.</p>
+      
+      <input type="text" id="nomeCritica" placeholder="Seu Nome (para contato)">
+      <input type="tel" id="whatsCritica" placeholder="Seu WhatsApp (para solução)">
+      <textarea id="mensagemCritica" placeholder="Conte-nos o que houve de errado..."></textarea>
+      
+      <button class="btn-submit" style="background: #e63946;" onclick="enviarCritica()">Enviar Feedback Privado</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ CONFIGURAÇÕES DO CLIENTE (Substitua pelos dados reais)
+    const GOOGLE_MAPS_URL = "https://maps.google.com"; // Cole o link do Google Maps do cliente
+    const WEBHOOK_APPS_SCRIPT = "SEU_WEBHOOK_DO_GOOGLE_SHEETS_AQUI"; // Cole a URL do Apps Script
+    const META_PIXEL_ID = ""; // Cole aqui o ID numérico do Pixel do Meta (ex: "847392019482710") ou deixe vazio ""
+
+    // 🚀 INICIALIZAÇÃO DINÂMICA DO META PIXEL (se configurado)
+    if (META_PIXEL_ID && META_PIXEL_ID.trim() !== "") {
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+
+      fbq('init', META_PIXEL_ID);
+      fbq('track', 'PageView');
+    }
+
+    function avaliar(nota) {
+      if (nota >= 4) {
+        document.getElementById("modalVip").style.display = "flex";
+      } else {
+        document.getElementById("modalCritica").style.display = "flex";
+      }
+    }
+
+    function enviarVipEGo() {
+      const nome = document.getElementById("nomeVip").value.trim();
+      const whats = document.getElementById("whatsVip").value.trim();
+
+      if (!nome || !whats) {
+        alert("Por favor, preencha o seu nome e WhatsApp para continuar.");
+        return;
+      }
+
+      const btn = document.querySelector("#modalVip .btn-submit");
+      btn.innerText = "Enviando...";
+      btn.disabled = true;
+
+      // Se o Pixel estiver ativo, regista a conversão de Lead
+      if (window.fbq) {
+        fbq('track', 'Lead');
+      }
+
+      if (WEBHOOK_APPS_SCRIPT && WEBHOOK_APPS_SCRIPT !== "SEU_WEBHOOK_DO_GOOGLE_SHEETS_AQUI") {
+        fetch(WEBHOOK_APPS_SCRIPT, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: nome,
+            whatsapp: whats,
+            tipo: "LEAD_VIP_4_5_ESTRELAS",
+            data: new Date().toLocaleString("pt-BR")
+          })
+        }).then(() => {
+          irParaGoogle();
+        }).catch(() => {
+          irParaGoogle();
+        });
+      } else {
+        irParaGoogle();
+      }
+    }
+
+    function enviarCritica() {
+      const nome = document.getElementById("nomeCritica").value.trim() || "Anônimo";
+      const whats = document.getElementById("whatsCritica").value.trim() || "Não informado";
+      const mensagem = document.getElementById("mensagemCritica").value.trim();
+
+      if (!mensagem) {
+        alert("Por favor, digite o que aconteceu para podermos te ajudar.");
+        return;
+      }
+
+      const btn = document.querySelector("#modalCritica .btn-submit");
+      btn.innerText = "Enviando...";
+      btn.disabled = true;
+
+      if (WEBHOOK_APPS_SCRIPT && WEBHOOK_APPS_SCRIPT !== "SEU_WEBHOOK_DO_GOOGLE_SHEETS_AQUI") {
+        fetch(WEBHOOK_APPS_SCRIPT, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: nome,
+            whatsapp: whats,
+            mensagem: mensagem,
+            tipo: "CRITICA_PRIVADA_1_3_ESTRELAS",
+            data: new Date().toLocaleString("pt-BR")
+          })
+        }).then(() => {
+          alert("Obrigado pelo feedback! A gerência recebeu sua mensagem e entrará em contato em breve.");
+          document.getElementById("modalCritica").style.display = "none";
+          btn.innerText = "Enviar Feedback Privado";
+          btn.disabled = false;
+        }).catch(() => {
+          alert("Obrigado pelo feedback! A gerência recebeu sua mensagem.");
+          document.getElementById("modalCritica").style.display = "none";
+          btn.innerText = "Enviar Feedback Privado";
+          btn.disabled = false;
+        });
+      } else {
+        alert("Obrigado pelo feedback! A gerência recebeu sua mensagem.");
+        document.getElementById("modalCritica").style.display = "none";
+        btn.innerText = "Enviar Feedback Privado";
+        btn.disabled = false;
+      }
+    }
+
+    function irParaGoogle() {
+      if (GOOGLE_MAPS_URL && GOOGLE_MAPS_URL !== "SEU_LINK_DO_GOOGLE_MAPS_AQUI") {
+        window.location.href = GOOGLE_MAPS_URL;
+      } else {
+        alert("Configure a variável GOOGLE_MAPS_URL com o link real do Google Maps!");
+      }
+    }
+  </script>
+
+</body>
+</html>
